@@ -1,0 +1,481 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* SCOUT Recon Dark Theme — always dark */
+    --background: 220 25% 6%;
+    --foreground: 160 15% 90%;
+
+    --card: 220 20% 9%;
+    --card-foreground: 160 15% 90%;
+
+    --popover: 220 20% 9%;
+    --popover-foreground: 160 15% 90%;
+
+    --primary: 160 84% 40%;
+    --primary-foreground: 220 25% 6%;
+
+    --secondary: 220 18% 13%;
+    --secondary-foreground: 160 15% 75%;
+
+    --muted: 220 15% 14%;
+    --muted-foreground: 215 12% 50%;
+
+    --accent: 175 70% 42%;
+    --accent-foreground: 220 25% 6%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 15% 15%;
+    --input: 220 15% 15%;
+    --ring: 160 84% 40%;
+
+    --radius: 0.75rem;
+
+    /* SCOUT custom tokens */
+    --scout-emerald: 160 84% 40%;
+    --scout-cyan: 175 70% 42%;
+    --scout-glow: 160 84% 45%;
+    --scout-grid: 220 15% 12%;
+
+    --search-gradient: linear-gradient(135deg, hsl(160 84% 40%), hsl(175 70% 42%));
+    --ai-gradient: linear-gradient(135deg, hsl(160 84% 40%) 0%, hsl(175 70% 42%) 50%, hsl(190 60% 45%) 100%);
+    --ai-bg: 160 30% 9%;
+    --ai-border: 160 40% 18%;
+    --relevance-high: 160 70% 45%;
+    --relevance-med: 45 80% 55%;
+    --relevance-low: 15 70% 50%;
+    --surface-elevated: 220 20% 10%;
+    --surface-hover: 220 18% 14%;
+
+    --sidebar-background: 220 25% 7%;
+    --sidebar-foreground: 160 15% 85%;
+    --sidebar-primary: 160 84% 40%;
+    --sidebar-primary-foreground: 220 25% 6%;
+    --sidebar-accent: 220 18% 13%;
+    --sidebar-accent-foreground: 160 15% 85%;
+    --sidebar-border: 220 15% 15%;
+    --sidebar-ring: 160 84% 40%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--scout-emerald) / 0.4);
+  }
+}
+
+/* ─── Topographic Grid Background ──────────────────────────── */
+.scout-grid-bg {
+  position: relative;
+  overflow-x: hidden;
+}
+
+.scout-grid-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(hsl(var(--scout-grid) / 0.5) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--scout-grid) / 0.5) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 30%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 30%, transparent 80%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── Radar Sweep Animation ────────────────────────────────── */
+.radar-container {
+  position: relative;
+  width: 280px;
+  height: 280px;
+}
+
+.radar-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid hsl(var(--scout-emerald) / 0.12);
+}
+
+.radar-ring-1 {
+  inset: 0;
+}
+
+.radar-ring-2 {
+  inset: 25%;
+}
+
+.radar-ring-3 {
+  inset: 42%;
+}
+
+.radar-crosshair-h,
+.radar-crosshair-v {
+  position: absolute;
+  background: hsl(var(--scout-emerald) / 0.08);
+}
+
+.radar-crosshair-h {
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  transform: translateY(-0.5px);
+}
+
+.radar-crosshair-v {
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  transform: translateX(-0.5px);
+}
+
+.radar-sweep {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  animation: radar-rotate 4s linear infinite;
+}
+
+.radar-sweep::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 50%;
+  height: 50%;
+  transform-origin: bottom left;
+  background: conic-gradient(from 0deg,
+      transparent 0deg,
+      hsl(var(--scout-emerald) / 0.25) 40deg,
+      transparent 80deg);
+  border-radius: 100% 0 0 0;
+}
+
+.radar-center-dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  background: hsl(var(--scout-emerald));
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 12px hsl(var(--scout-emerald) / 0.6),
+    0 0 24px hsl(var(--scout-emerald) / 0.3);
+}
+
+/* Radar blip dots */
+.radar-blip {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: hsl(var(--scout-emerald));
+  border-radius: 50%;
+  opacity: 0;
+  animation: blip-pulse 4s linear infinite;
+}
+
+.radar-blip-1 {
+  top: 25%;
+  left: 65%;
+  animation-delay: 0.5s;
+}
+
+.radar-blip-2 {
+  top: 60%;
+  left: 30%;
+  animation-delay: 1.8s;
+}
+
+.radar-blip-3 {
+  top: 35%;
+  left: 40%;
+  animation-delay: 3.1s;
+}
+
+@keyframes radar-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes blip-pulse {
+
+  0%,
+  15% {
+    opacity: 0;
+    transform: scale(0);
+  }
+
+  20% {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 8px hsl(var(--scout-emerald) / 0.8);
+  }
+
+  60% {
+    opacity: 0.3;
+    transform: scale(1);
+    box-shadow: none;
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(0);
+  }
+}
+
+/* ─── SCOUT Utilities ──────────────────────────────────────── */
+@layer utilities {
+  .search-gradient {
+    background: var(--search-gradient);
+  }
+
+  .ai-gradient {
+    background: var(--ai-gradient);
+  }
+
+  .scout-gradient-text {
+    background: var(--ai-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .ai-gradient-text {
+    background: var(--ai-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .scout-glow {
+    box-shadow: 0 0 0 1px hsl(var(--scout-emerald) / 0.3),
+      0 0 20px -4px hsl(var(--scout-emerald) / 0.2),
+      0 0 40px -8px hsl(var(--scout-emerald) / 0.1);
+  }
+
+  .search-glow {
+    box-shadow: 0 0 0 1px hsl(var(--scout-emerald) / 0.4),
+      0 4px 24px -4px hsl(var(--scout-emerald) / 0.2),
+      0 12px 48px -8px hsl(var(--scout-emerald) / 0.1);
+  }
+
+  .surface-elevated {
+    background: hsl(var(--surface-elevated));
+    border: 1px solid hsl(var(--border));
+  }
+
+  .glass-card {
+    background: hsl(var(--card) / 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid hsl(var(--border));
+  }
+
+  .terminal-card {
+    background: hsl(160 30% 5% / 0.8);
+    border: 1px solid hsl(var(--scout-emerald) / 0.2);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+}
+
+/* ─── Signal Pulse ─────────────────────────────────────────── */
+@keyframes signal-pulse {
+  0% {
+    box-shadow: 0 0 0 0 hsl(var(--scout-emerald) / 0.4);
+  }
+
+  70% {
+    box-shadow: 0 0 0 10px hsl(var(--scout-emerald) / 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 hsl(var(--scout-emerald) / 0);
+  }
+}
+
+.signal-pulse {
+  animation: signal-pulse 2s ease-in-out infinite;
+}
+
+/* ─── Scan Line (for AI card loading) ──────────────────────── */
+@keyframes scan-line {
+  0% {
+    top: 0;
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+.scan-line-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.scan-line-effect::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  top: 0;
+  background: linear-gradient(90deg,
+      transparent 0%,
+      hsl(var(--scout-emerald) / 0.6) 50%,
+      transparent 100%);
+  animation: scan-line 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ─── Fade Animations ──────────────────────────────────────── */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.5s ease-out forwards;
+}
+
+.animate-fade-up-delay-1 {
+  animation: fade-up 0.5s ease-out 0.15s forwards;
+  opacity: 0;
+}
+
+.animate-fade-up-delay-2 {
+  animation: fade-up 0.5s ease-out 0.3s forwards;
+  opacity: 0;
+}
+
+.animate-fade-up-delay-3 {
+  animation: fade-up 0.5s ease-out 0.45s forwards;
+  opacity: 0;
+}
+
+/* ─── Shimmer (loading) ────────────────────────────────────── */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(90deg,
+      hsl(var(--muted)) 25%,
+      hsl(var(--scout-emerald) / 0.08) 50%,
+      hsl(var(--muted)) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* ─── Typing Cursor ────────────────────────────────────────── */
+@keyframes blink {
+
+  0%,
+  50% {
+    opacity: 1;
+  }
+
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.typing-cursor::after {
+  content: '▋';
+  animation: blink 1s step-end infinite;
+  color: hsl(var(--scout-emerald));
+}
+
+/* ─── Coordinate Tag ───────────────────────────────────────── */
+.coord-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: hsl(var(--scout-emerald) / 0.5);
+  letter-spacing: 0.05em;
+}
+
+/* ─── Result accent bar ────────────────────────────────────── */
+.result-accent {
+  position: relative;
+}
+
+.result-accent::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 2px;
+  border-radius: 1px;
+  background: linear-gradient(180deg,
+      hsl(var(--scout-emerald) / 0.6),
+      hsl(var(--scout-cyan) / 0.3));
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.result-accent:hover::before {
+  opacity: 1;
+}
