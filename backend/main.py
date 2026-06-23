@@ -302,7 +302,7 @@ async def ai_summarize(req: SummarizeRequest):
         )
 
         response = gemini_client.models.generate_content(
-            model="gemini-2.0-flash",
+            model="gemini-3.1-flash-lite",
             contents=prompt,
             config=genai.types.GenerateContentConfig(
                 system_instruction=(

@@ -59,7 +59,7 @@ Traditional search engines are opaque — you type a query, get a list of blue l
 
 - 🕷️ **Web Crawler** — Fetches any URL, parses HTML, extracts clean text, and stores it in a PostgreSQL database
 - 🔎 **Full-Text Search** — Uses PostgreSQL `tsvector` + `tsquery` with GIN indexes and trigram matching for fast, linguistically-aware search
-- 🤖 **AI Summarization** — Sends top search results to Google Gemini 2.0 Flash to generate a concise, human-readable answer
+- 🤖 **AI Summarization** — Sends top search results to Google Gemini 3.1 Flash Lite to generate a concise, human-readable answer
 - 🌐 **Wikipedia Auto-Crawl** — When no results exist for a query, SCOUT automatically searches Wikipedia's OpenSearch API, crawls up to 3 relevant articles, indexes them, and re-runs the search — all in a single request
 - 📊 **Relevance Scoring** — Results are ranked using `ts_rank_cd` and normalized to 0–100% with color-coded badges (HIGH / MED / LOW)
 - 🎯 **Search Analytics** — Every search query is logged to a `search_queries` table for analytics
@@ -90,7 +90,7 @@ Traditional search engines are opaque — you type a query, get a list of blue l
 | **Uvicorn** | ASGI server for running FastAPI |
 | **httpx** | Async HTTP client for web crawling |
 | **BeautifulSoup4** | HTML parsing and text extraction |
-| **Google GenAI SDK** | Google Gemini 2.0 Flash for AI summarization |
+| **Google GenAI SDK** | Google Gemini 3.1 Flash Lite for AI summarization |
 | **Supabase Python SDK** | PostgreSQL database client |
 
 ### Database & Infrastructure
@@ -128,7 +128,7 @@ Traditional search engines are opaque — you type a query, get a list of blue l
 │  ┌──────────────┐  ┌───────────────┐  ┌─────────────────────────────┐   │
 │  │  /api/search  │  │  /api/crawl   │  │  /api/ai-summarize         │   │
 │  │              │  │               │  │                             │   │
-│  │  Full-text   │  │  Fetch URL    │  │  Google Gemini 2.0 Flash   │   │
+│  │  Full-text   │  │  Fetch URL    │  │  Gemini 3.1 Flash Lite     │   │
 │  │  search +    │  │  Parse HTML   │  │  Summarize top 3 results   │   │
 │  │  auto-crawl  │  │  Index text   │  │                             │   │
 │  └──────┬───────┘  └───────┬───────┘  └──────────┬──────────────────┘   │
@@ -138,7 +138,7 @@ Traditional search engines are opaque — you type a query, get a list of blue l
 │                  ▼                               ▼                      │
 │  ┌───────────────────────┐        ┌──────────────────────────────┐      │
 │  │    Supabase           │        │    Google Gemini API          │      │
-│  │    (PostgreSQL)       │        │    (gemini-2.0-flash)         │      │
+│  │    (PostgreSQL)       │        │    (gemini-3.1-flash-lite)    │      │
 │  │                       │        └──────────────────────────────┘      │
 │  │  - raw_content        │                                              │
 │  │  - processed_content  │                                              │
@@ -288,7 +288,7 @@ The frontend then immediately triggers a second API call for AI summarization:
 # main.py → ai_summarize()
 prompt = f'Search query: "machine learning"\n\nSearch results:\n...'
 response = gemini_client.models.generate_content(
-    model="gemini-2.0-flash",
+    model="gemini-3.1-flash-lite",
     contents=prompt,
     config=GenerateContentConfig(
         system_instruction="You are a search engine AI assistant...",
@@ -535,7 +535,7 @@ ts_headline('english', clean_text, query, 'MaxWords=60,MinWords=20')
 ## 11. How AI Summarization Works
 
 ```
-[Search Results]  ──►  [Prompt Construction]  ──►  [Gemini 2.0 Flash]  ──►  [Summary]
+[Search Results]  ──►  [Prompt Construction]  ──►  [Gemini 3.1 Flash Lite]  ──►  [Summary]
 ```
 
 ### Prompt Template
@@ -559,7 +559,7 @@ User:   Search query: "machine learning"
         Machine learning is the study of computer algorithms that can improve...
 ```
 
-### Why Gemini 2.0 Flash?
+### Why Gemini 3.1 Flash Lite?
 
 | Feature | Value |
 |---------|-------|

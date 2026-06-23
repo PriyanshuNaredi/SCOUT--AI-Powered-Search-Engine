@@ -10,7 +10,7 @@ An AI-powered search engine with intelligent summaries, full-text ranking, and w
 | UI | Tailwind CSS + shadcn/ui |
 | Backend API | Python + FastAPI |
 | Database | Supabase (PostgreSQL) |
-| AI | Google Gemini 2.0 Flash (free tier) |
+| AI | Google Gemini 3.1 Flash Lite (free tier) |
 
 ## Getting Started
 
